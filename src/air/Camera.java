@@ -25,9 +25,10 @@ public class Camera {
         setViewport(targetX, targetY);
     }
 
-    /** TODO: pushMatrix, translate, popMatrix */
+    /** use translate(-camera.position.x, camera.position.y) */
+    @Deprecated
     public Point translateWorldToCamera(int x, int y) {
-        // transform.translate((obj.location.x - viewport.x), (obj.location.y - viewport.y));
+        // transform.translate((obj.location.x - viewport.x), (obj.location.y - viewport.y)); // original code
         return new Point(x - position.x, y - position.y);
     }
 

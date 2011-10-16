@@ -1,5 +1,7 @@
 package air;
 
+import java.awt.Dimension;
+
 import processing.core.PImage;
 
 /**
@@ -8,6 +10,11 @@ import processing.core.PImage;
 @SuppressWarnings("serial")
 public class TvSim extends Sketch {
     PImage image;
+
+    Dimension world; // set by image size
+    Dimension cameraSize = new Dimension(200, 200);
+    Camera camera;
+
     float brightness;
     final int MAX_BRIGHTNESS = 2; // used to scale the brightness by mouse position
     int BRIGHTNESS_COEFF; // how much to scale the brightness based on sketch width
@@ -36,9 +43,11 @@ public class TvSim extends Sketch {
     @Override
     public void setup() {
         image = loadImage("rgbtest150.jpg");
-        // variables in the size() command do not work on export, see javadoc
-        // size(image.width * CELL_WIDTH, image.height * CELL_HEIGHT, PGraphicsOpenGL.OPENGL);
-        size(image.width * CELL_WIDTH, image.height * CELL_HEIGHT, P2D);
+
+        world = new Dimension(image.width * CELL_WIDTH, image.height * CELL_HEIGHT);
+        size(cameraSize.width, cameraSize.height, P2D);
+        camera = new Camera(world.width, world.height, cameraSize.width, cameraSize.height);
+
         noStroke();
 
         // for the width of the sketch to scale to the max brightness, we need to take the number of pixels
