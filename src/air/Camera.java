@@ -25,6 +25,11 @@ public class Camera {
         setViewport(targetX, targetY);
     }
 
+    /** sugar */
+    public void centreCameraOn(Point point) {
+        centreCameraOn(point.x, point.y);
+    }
+
     /** use translate(-camera.position.x, camera.position.y) */
     @Deprecated
     public Point translateWorldToCamera(int x, int y) {

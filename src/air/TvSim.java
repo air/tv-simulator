@@ -5,15 +5,17 @@ import java.awt.Dimension;
 import processing.core.PImage;
 
 /**
- * TODO zoom!
+ * TODO it's not actually smooth camera movement - focus is smooth but camera isn't TODO zoom!
+ * 
  */
 @SuppressWarnings("serial")
 public class TvSim extends Sketch {
     PImage image;
 
     Dimension world; // set by image size
-    Dimension cameraSize = new Dimension(200, 200);
+    Dimension cameraSize = new Dimension(800, 800);
     Camera camera;
+    OrbitingPoint focus;
 
     float brightness;
     final int MAX_BRIGHTNESS = 2; // used to scale the brightness by mouse position
@@ -30,10 +32,10 @@ public class TvSim extends Sketch {
     final float MAX_PERLIN_COEFF = 3000f;
     final float MIN_PERLIN_COEFF = 0.001f;
 
-    final int CELL_WIDTH = 5;
-    final int CELL_HEIGHT = 4;
-    final int PHOSPHOR_WIDTH = 1; // phosphor width * 3 must fit in cell width!
-    final int PHOSPHOR_HEIGHT = 3;
+    final int CELL_WIDTH = 15; // try (phos width * 3) + 2
+    final int CELL_HEIGHT = 14; // try phos height + 1
+    final int PHOSPHOR_WIDTH = 4; // phosphor width * 3 must fit in cell width!
+    final int PHOSPHOR_HEIGHT = 12;
 
     boolean redOn = true;
     boolean greenOn = true;
@@ -48,7 +50,9 @@ public class TvSim extends Sketch {
         size(cameraSize.width, cameraSize.height, P2D);
         camera = new Camera(world.width, world.height, cameraSize.width, cameraSize.height);
 
-        noStroke();
+        int centreX = world.width / 2;
+        int centreY = world.height / 2;
+        focus = new OrbitingPoint(centreX, centreY, centreX, centreY);
 
         // for the width of the sketch to scale to the max brightness, we need to take the number of pixels
         // in the image and expand it out by the cell width
@@ -56,6 +60,7 @@ public class TvSim extends Sketch {
         // set the initial brightness as if the mouse were at the right edge
         brightness = width / BRIGHTNESS_COEFF;
 
+        noStroke();
         background(0);
         drawRgb(CELL_WIDTH, CELL_HEIGHT);
     }
@@ -97,12 +102,16 @@ public class TvSim extends Sketch {
     public void draw() {
         showDebugAtIntervals();
 
-        if (interference || mouseMoved) {
+        focus.update();
+        camera.centreCameraOn(focus);
+        translate(-camera.position.x, -camera.position.y);
+
+        if (mouseMoved) {
             brightness = getBrightnessCoeff();
-            // background(0); // remove this if sizes are stable
-            drawRgb(CELL_WIDTH, CELL_HEIGHT);
-            mouseMoved = false;
         }
+
+        background(0);
+        drawRgb(CELL_WIDTH, CELL_HEIGHT);
     }
 
     void drawRgb(int cellWidth, int cellHeight) {
